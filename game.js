@@ -64,22 +64,30 @@ const difficultySettings = {
     "easy": {
         "dimensions": 4,
         "encounterChance": 15,
-        "lives": 8
+        "lives": 8,
+        "numrange" : 10,
+        "guess" : 6
     },
     "normal": {
         "dimensions": 6,
         "encounterChance": 25,
-        "lives": 5
+        "lives": 5,
+        "numrange" : 13,
+        "guess" : 5
     },
     "hard": {
         "dimensions": 8,
         "encounterChance": 40,
-        "lives": 4
+        "lives": 4,
+        "numrange" : 16,
+        "guess" : 4
     },
     "expert": {
         "dimensions": 12,
         "encounterChance": 60,
-        "lives": 3
+        "lives": 3,
+        "numrange" : 19,
+        "guess" : 4
     }
 };
 
@@ -106,21 +114,27 @@ async function initDifficulty() {
     let {
         dimensions,
         encounterChance,
-        lives
+        lives,
+        numrange,
+        guess
     } = difficultySettings[Object.keys(difficultySettings)[difficulty - 1]];
 
     let gameSettings = init(dimensions);
     return {
         gameSettings,
         encounterChance,
-        lives
+        lives,
+        numrange,
+        guess
     };
 }
 
 const {
     gameSettings,
     encounterChance,
-    lives
+    lives,
+    numrange,
+    guess
 } = await initDifficulty();
 
 const maze = new Maze(gameSettings.nx, gameSettings.ny, gameSettings.sx, gameSettings.sy);
@@ -165,10 +179,10 @@ function generateOptions(north = false, south = false, west = false, east = fals
     };
 }
 
-async function encounter(numGuesses = 4) {
-    const answer = Math.floor(Math.random() * 10); // generate random answer between 0 and 9
+async function encounter(range = numrange, numGuesses = guess) {
+    const answer = Math.floor(Math.random() * range); // generate random answer
 
-    console.log(`You have encountered a monster!\nGuess a number between 0 and 9. You have ${numGuesses} guesses.\n`);
+    console.log(`You have encountered a monster!\nGuess a number between 0 and ${range - 1}. You have ${numGuesses} guesses.\n`);
 
     return new Promise(resolve => {
         function askQuestion() {
@@ -176,10 +190,10 @@ async function encounter(numGuesses = 4) {
                 const parsedGuess = parseInt(guess, 10);
 
                 if (isNaN(parsedGuess)) {
-                    console.log('Invalid input. Please enter a number between 0 and 9.\n');
+                    console.log(`Invalid input. Please enter a number between 0 and ${range - 1}.\n`);
                     askQuestion(); // call the function again to ask for a valid input
-                } else if (parsedGuess < 0 || parsedGuess > 9) {
-                    console.log('Invalid guess. Please enter a number between 0 and 9.\n');
+                } else if (parsedGuess < 0 || parsedGuess > (range - 1)) {
+                    console.log(`Invalid guess. Please enter a number between 0 and ${range - 1}.\n`);
                     askQuestion(); // call the function again to ask for a valid input
                 } else if (parsedGuess === answer) {
                     console.log('Congratulations! You have defeated a monster!\n');
