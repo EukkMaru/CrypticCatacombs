@@ -62,34 +62,51 @@ function init(dimension = 8) {
 
 const difficultySettings = {
     "easy": {
-        "dimensions": 4,
-        "encounterChance": 15,
-        "lives": 5,
-        "numrange": 10,
-        "guess": 5
+      "dimensions": 4,
+      "encounterChance": 15,
+      "lives": 5,
+      "numrange": 10,
+      "guess": 5,
+      "specialEncounterChance": 25,
+      "teleportChance": 5,
+      "potionChance": 95,
+      "potionLuck": 25
     },
     "normal": {
-        "dimensions": 6,
-        "encounterChance": 25,
-        "lives": 5,
-        "numrange": 16,
-        "guess": 4
+      "dimensions": 6,
+      "encounterChance": 25,
+      "lives": 5,
+      "numrange": 16,
+      "guess": 4,
+      "specialEncounterChance": 25,
+      "teleportChance": 5,
+      "potionChance": 93,
+      "potionLuck": 30
     },
     "hard": {
-        "dimensions": 8,
-        "encounterChance": 30,
-        "lives": 4,
-        "numrange": 16,
-        "guess": 3
+      "dimensions": 8,
+      "encounterChance": 30,
+      "lives": 4,
+      "numrange": 16,
+      "guess": 3,
+      "specialEncounterChance": 30,
+      "teleportChance": 10,
+      "potionChance": 87,
+      "potionLuck": 30
     },
     "expert": {
-        "dimensions": 12,
-        "encounterChance": 50,
-        "lives": 3,
-        "numrange": 19,
-        "guess": 3
+      "dimensions": 12,
+      "encounterChance": 50,
+      "lives": 3,
+      "numrange": 19,
+      "guess": 3,
+      "specialEncounterChance": 30,
+      "teleportChance": 10,
+      "potionChance": 87,
+      "potionLuck": 30
     }
-};
+  };
+  
 
 async function selectDifficulty() {
     console.log('Select the difficulty:\n\n1) Easy\n2) Normal\n3) Hard\n4) Expert\n');
@@ -116,7 +133,11 @@ async function initDifficulty() {
         encounterChance,
         lives,
         numrange,
-        guess
+        guess,
+        specialEncounterChance,
+        teleportChance,
+        potionChance,
+        potionLuck
     } = difficultySettings[Object.keys(difficultySettings)[difficulty - 1]];
 
     let gameSettings = init(dimensions);
@@ -125,7 +146,11 @@ async function initDifficulty() {
         encounterChance,
         lives,
         numrange,
-        guess
+        guess,
+        specialEncounterChance,
+        teleportChance,
+        potionChance,
+        potionLuck
     };
 }
 
@@ -134,7 +159,11 @@ const {
     encounterChance,
     lives,
     numrange,
-    guess
+    guess,
+    specialEncounterChance,
+    teleportChance,
+    potionChance,
+    potionLuck
 } = await initDifficulty();
 
 const maze = new Maze(gameSettings.nx, gameSettings.ny, gameSettings.sx, gameSettings.sy);
@@ -217,6 +246,45 @@ async function encounter(range = numrange, numGuesses = guess) {
     });
 }
 
+async function specialEncounter(tp = teleportChance, potion = potionChance, luck = potionLuck) {
+    console.log('You have found a mysterious chest. Do you want to open it?\n1) Open\n2) Ignore');
+
+    let chestRNG = Math.random() * 100;
+    let potionRNG = Math.random() * 100;
+    
+    return new Promise(resolve => { //1: tp, 2: poison potion(-1), 3: health potion, 4: trap(-3)
+        function askQuestion() {
+            rl.question('> ', (ans) => {
+                const parsedAns = parseInt(ans, 10);
+
+                if(isNaN(parsedAns)) {
+                    console.log(`Invalid input, Please enter a number between 1 and 2.`);
+                    askQuestion();
+                } else if (parsedAns < 1 || parsedAns > 2) {
+                    console.log(`Invalid input, Please enter a number between 1 and 2.`);
+                    askQuestion();
+                } else if (parsedAns == 2) {
+                    resolve(0);
+                } else {
+                    if(chestRNG < tp) {
+                        resolve(1);
+                    } else if (chestRNG > tp && chestRNG < (tp+potion)) {
+                        if(potionRNG < potionLuck) {
+                            resolve(2);
+                        } else {
+                            resolve(3);
+                        }
+                    } else {
+                        resolve(4);
+                    }
+                }
+            });
+        }
+
+        askQuestion();
+    });
+}
+
 
 async function prompt(current, debug = false) {
     //current is an object where {'x' : int, 'y' : int}
@@ -290,7 +358,7 @@ async function prompt(current, debug = false) {
                     return;
                 } else {
                     console.log(`\nYou have ${remainingLives} hearts remaining.\n`);
-                    prompt(current, debug); // prompt again with the same cell
+                    prompt(next_cell, debug); // prompt again with the same cell
                 }
             } else {
                 // delay execution of next cell
@@ -301,7 +369,95 @@ async function prompt(current, debug = false) {
                     }
                 }, 1000); // wait for 1 second before triggering visualization of next cell
             }
-        } else {
+        } else if (rng > encounterChance && rng < (encounterChance + specialEncounterChance)) {
+            let chestResult = await specialEncounter();
+            if (chestResult == 0) {
+                console.log(`You decided to ignore the chest. You continue on with your journey.`);
+                setTimeout(() => {
+                    if (gamestate) {
+                        current = next_cell;
+                        prompt(next_cell, debug);
+                    }
+                }, 1000);
+            } else if (chestResult == 1) {
+                console.log(`Suddenly, a bright flash of light obscures your vision. When you open your eyes, you find yourself transported back to the very place where your adventure began.\n\nYou have been teleported back to the starting point.`);
+                setTimeout(() => {
+                    if (gamestate) {
+                        next_cell = {
+                            'x': gameSettings.sx,
+                            'y': gameSettings.sy
+                        }
+                        prompt(next_cell, debug);
+                    }
+                }, 1000);
+            } else if (chestResult == 2) {
+                console.log(`Inside the chest, you find an unknown potion. As you drink the potion, you feel a sudden jolt of pain.\n\nYou have lost one heart.`)
+                remainingLives--;
+                if (remainingLives == 0) {
+                    console.log("Game Over!");
+                    rl.question('Do you want to play again? (y/n)', (answer) => {
+                        if (answer.toLowerCase() === 'y') {
+                            remainingLives = lives;
+                            current = {
+                                'x': gameSettings.sx,
+                                'y': gameSettings.sy
+                            };
+                            prompt(current, debug);
+                        } else {
+                            rl.close();
+                        }
+                    });
+                    gamestate = false;
+                    return;
+                } else {
+                    console.log(`\nYou have ${remainingLives} hearts remaining.\n`);
+                    prompt(next_cell, debug); // prompt again with the same cell
+                }   
+            } else if (chestResult == 3) {
+                if(remainingLives == lives) {
+                    console.log(`Inside the chest, you find an unknown potion. You drank the potion, but nothing seemed to happen. You decide to continue on your journey.`);
+                    setTimeout(() => {
+                        if (gamestate) {
+                            current = next_cell;
+                            prompt(next_cell, debug);
+                        }
+                    }, 1000);
+                } else {
+                    console.log(`Inside the chest, you find an unknown potion. As you drink the potion, you feel a surge of power coursing through your body.\n\nYou have gained one heart.`)
+                    remainingLives++;
+                    setTimeout(() => {
+                        if (gamestate) {
+                            current = next_cell;
+                            prompt(next_cell, debug);
+                        }
+                    }, 1000);
+                }
+            } else if (chestResult == 4) {
+                console.log(`The chest was a trap! As soon as you opened it, a huge explosion engulfed you.\n\nYou have lost three hearts.`);
+                remainingLives -= 3;
+                if (remainingLives <= 0) {
+                    console.log("Game Over!");
+                    rl.question('Do you want to play again? (y/n)', (answer) => {
+                        if (answer.toLowerCase() === 'y') {
+                            remainingLives = lives;
+                            current = {
+                                'x': gameSettings.sx,
+                                'y': gameSettings.sy
+                            };
+                            prompt(current, debug);
+                        } else {
+                            rl.close();
+                        }
+                    });
+                    gamestate = false;
+                    return;
+                } else {
+                    console.log(`\nYou have ${remainingLives} hearts remaining.\n`);
+                    prompt(next_cell, debug); // prompt again with the same cell
+                }
+            }
+        }
+        else {
             if (gamestate) {
                 current = next_cell;
                 prompt(next_cell, debug);
