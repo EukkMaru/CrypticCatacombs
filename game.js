@@ -231,8 +231,9 @@ async function prompt(current, debug = false) {
         ans *= 1;
         let next_cell;
         if (!Number.isInteger(ans) || ans < 1 || ans > options.directions.length) {
-            console.error("Invalid input. Please enter an integer between 1 and " + options.directions.length);
-            prompt(current, debug);
+            console.log("Invalid input. Please enter an integer between 1 and " + options.directions.length + ".\n");
+            next_cell = current;
+            return prompt(next_cell, debug);
         }
         switch (options.directions[ans - 1]) {
             case 'N':
