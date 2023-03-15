@@ -349,7 +349,7 @@ async function prompt(current, debug = false) {
                                 'x': gameSettings.sx,
                                 'y': gameSettings.sy
                             };
-                            prompt(current, debug);
+                            return prompt(current, debug);
                         } else {
                             rl.close();
                         }
@@ -402,7 +402,7 @@ async function prompt(current, debug = false) {
                                 'x': gameSettings.sx,
                                 'y': gameSettings.sy
                             };
-                            prompt(current, debug);
+                            return prompt(current, debug);
                         } else {
                             rl.close();
                         }
