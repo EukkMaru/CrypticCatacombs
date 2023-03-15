@@ -254,7 +254,16 @@ def prompt(current, debug = False):
     
     if next_cell["x"] == game_settings["ex"] and next_cell["y"] == game_settings["ey"]:
         game_state = False
-        return print("You Won!")
+        winning_str = """                                              (`\ .-') /`                  .-') _ ,---.,---. 
+                                               `.( OO ),'                 ( OO ) )|   ||   | 
+  ,--.   ,--..-'),-----.  ,--. ,--.         ,--./  .--.   .-'),-----. ,--./ ,--,' |   ||   | 
+   \  `.'  /( OO'  .-.  ' |  | |  |         |      |  |  ( OO'  .-.  '|   \ |  |\ |   ||   | 
+ .-')     / /   |  | |  | |  | | .-')       |  |   |  |, /   |  | |  ||    \|  | )|   ||   | 
+(OO  \   /  \_) |  |\|  | |  |_|( OO )      |  |.'.|  |_)\_) |  |\|  ||  .     |/ |  .'|  .' 
+ |   /  /\_   \ |  | |  | |  | | `-' /      |         |    \ |  | |  ||  |\    |  `--' `--'  
+ `-./  /.__)   `'  '-'  '('  '-'(_.-'       |   ,'.   |     `'  '-'  '|  | \   |  .--. .--.  
+   `--'          `-----'   `-----'          '--'   '--'       `-----' `--'  `--'  '--' '--'  """
+        return print(winning_str)
     
     if (random() * 100 < encounter_chance):
         combat = encounter()
