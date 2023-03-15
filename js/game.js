@@ -3,7 +3,7 @@ import {
 } from './maze.js';
 import readline from 'readline';
 
-const debug = false;
+const debug = true;
 
 const rl = readline.createInterface({
     input: process.stdin,
