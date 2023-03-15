@@ -1,4 +1,6 @@
-import { Maze } from './maze.js';
+import {
+    Maze
+} from './maze.js';
 import readline from 'readline';
 
 const debug = false;
@@ -65,29 +67,29 @@ const difficultySettings = {
         "dimensions": 4,
         "encounterChance": 15,
         "lives": 8,
-        "numrange" : 10,
-        "guess" : 6
+        "numrange": 10,
+        "guess": 6
     },
     "normal": {
         "dimensions": 6,
         "encounterChance": 25,
         "lives": 5,
-        "numrange" : 13,
-        "guess" : 5
+        "numrange": 13,
+        "guess": 5
     },
     "hard": {
         "dimensions": 8,
         "encounterChance": 40,
         "lives": 4,
-        "numrange" : 16,
-        "guess" : 4
+        "numrange": 16,
+        "guess": 4
     },
     "expert": {
         "dimensions": 12,
         "encounterChance": 60,
         "lives": 3,
-        "numrange" : 19,
-        "guess" : 4
+        "numrange": 19,
+        "guess": 4
     }
 };
 
@@ -228,6 +230,10 @@ async function prompt(current, debug = false) {
     rl.question(options.text, async (ans) => {
         ans *= 1;
         let next_cell;
+        if (!Number.isInteger(ans) || ans < 1 || ans > options.directions.length) {
+            console.error("Invalid input. Please enter an integer between 1 and " + options.directions.length);
+            prompt(current, debug);
+        }
         switch (options.directions[ans - 1]) {
             case 'N':
                 next_cell = {
