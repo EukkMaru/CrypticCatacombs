@@ -1,9 +1,7 @@
-import {
-    Maze
-} from './maze.js';
+import { Maze } from './maze.js';
 import readline from 'readline';
 
-const debug = true;
+const debug = false;
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -66,30 +64,30 @@ const difficultySettings = {
     "easy": {
         "dimensions": 4,
         "encounterChance": 15,
-        "lives": 8,
+        "lives": 5,
         "numrange": 10,
-        "guess": 6
+        "guess": 5
     },
     "normal": {
         "dimensions": 6,
         "encounterChance": 25,
         "lives": 5,
-        "numrange": 13,
-        "guess": 5
-    },
-    "hard": {
-        "dimensions": 8,
-        "encounterChance": 40,
-        "lives": 4,
         "numrange": 16,
         "guess": 4
     },
+    "hard": {
+        "dimensions": 8,
+        "encounterChance": 30,
+        "lives": 4,
+        "numrange": 16,
+        "guess": 3
+    },
     "expert": {
         "dimensions": 12,
-        "encounterChance": 60,
+        "encounterChance": 50,
         "lives": 3,
         "numrange": 19,
-        "guess": 4
+        "guess": 3
     }
 };
 
@@ -269,7 +267,8 @@ async function prompt(current, debug = false) {
             gamestate = false;
             return console.log("You Won!");
         }
-        if (Math.random() * 100 < encounterChance) {
+        var rng = Math.random() * 100;
+        if (rng < encounterChance) {
             let combat = await encounter();
             if (!combat) {
                 remainingLives--;
@@ -310,7 +309,6 @@ async function prompt(current, debug = false) {
         }
     });
 }
-
 
 function generateCellVisualization(north = true, south = true, west = true, east = true) {
     let result = new String();
