@@ -46,30 +46,46 @@ DIFFICULTY_SETTINGS = {
     "easy": {
         "dimensions": 4,
         "encounter_chance": 15,
-        "lives": 8,
+        "lives": 5,
         "numrange" : 10,
-        "guess" : 6,
+        "guess" : 5,
+        "special_encounter_chance": 25,
+        "teleport_chance": 5,
+        "potion_chance": 95,
+        "potion_luck": 25
     },
     "normal": {
         "dimensions": 6,
         "encounter_chance": 25,
         "lives": 5,
-        "numrange" : 13,
-        "guess" : 5,
+        "numrange" : 16,
+        "guess" : 4,
+        "special_encounter_chance": 25,
+        "teleport_chance": 5,
+        "potion_chance": 93,
+        "potion_luck": 30
     },
     "hard": {
         "dimensions": 8,
-        "encounter_chance": 40,
+        "encounter_chance": 30,
         "lives": 4,
         "numrange" : 16,
-        "guess" : 4,
+        "guess" : 3,
+        "special_encounter_chance": 30,
+        "teleport_chance": 10,
+        "potion_chance": 87,
+        "potion_luck": 30
     },
     "expert": {
         "dimensions": 12,
-        "encounter_chance": 60,
+        "encounter_chance": 50,
         "lives": 3,
         "numrange" : 19,
-        "guess" : 4,
+        "guess" : 3,
+        "special_encounter_chance": 30,
+        "teleport_chance": 10,
+        "potion_chance": 87,
+        "potion_luck": 30
     },
 }
 
@@ -90,7 +106,15 @@ def select_difficulty():
 
 def init_difficulty():
     difficulty = select_difficulty()
-    [dimensions, encounter_chance, lives, numrange, guess] = list(list(DIFFICULTY_SETTINGS.values())[difficulty - 1].values())
+    [dimensions, 
+     encounter_chance, 
+     lives, 
+     numrange, 
+     guess, 
+     special_encounter_chance, 
+     teleport_chance, 
+     potion_chance, 
+     potion_luck] = list(list(DIFFICULTY_SETTINGS.values())[difficulty - 1].values())
 
     game_settings = init(dimensions)
 
@@ -100,9 +124,20 @@ def init_difficulty():
         lives,
         numrange,
         guess,
+        special_encounter_chance,
+        teleport_chance, 
+        potion_chance, 
+        potion_luck
     ]
 
-[game_settings, encounter_chance, lives, numrange, guess] = init_difficulty()
+[game_settings, 
+ encounter_chance, 
+ lives, numrange, 
+ guess, 
+ special_encounter_chance,
+ teleport_chance, 
+ potion_chance, 
+ potion_luck] = init_difficulty()
 
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
 maze.make_maze()
@@ -176,6 +211,35 @@ def encounter(num_range = numrange, num_guesses = guess):
             elif guess < answer:
                 print(f"Wrong answer. Your guess is too low. You have {num_guesses} guesses left.")
                 continue
+
+def special_encounter(tp = teleport_chance, potion = potion_chance, luck = potion_luck):
+    print("You have found a mysterious chest. Do you want to open it?\n1) Open\n2) Ignore")
+
+    chest_rng = random() * 100
+    potion_rng = random() * 100
+
+    while True:
+        try:
+            answer = int(input("> "))
+            if answer > 2 or answer < 1:
+                raise Exception()
+            else:
+                break
+        except:
+            print(f"Invalid input. Please enter an integer between 1 and 2")
+    
+    if answer == 2:
+        return 0
+    else:
+        if chest_rng < tp:
+            return 1
+        elif chest_rng > tp and chest_rng < (tp+potion):
+            if potion_rng < potion_luck:
+                return 2
+            else:
+                return 3
+        else:
+            return 4
 
 def generate_cell_visualization(north = True, south = True, west = True, east = True):
     result = ""
@@ -265,7 +329,8 @@ def prompt(current, debug = False):
    `--'          `-----'   `-----'          '--'   '--'       `-----' `--'  `--'  '--' '--'  """
         return print(winning_str)
     
-    if (random() * 100 < encounter_chance):
+    rng = random() * 100
+    if (rng < encounter_chance):
         combat = encounter()
         if not combat:
             remaining_lives -= 1
@@ -294,13 +359,92 @@ def prompt(current, debug = False):
                 return
             else:
                 print(f"\nYou have {remaining_lives} hearts remaining.\n")
-                prompt(current, debug)
+                prompt(current_cell, debug)
 
         else:
             # time.sleep(1000)
             if game_state:
                 current = next_cell
                 prompt(next_cell, debug)
+    elif rng > encounter_chance and rng < (encounter_chance + special_encounter_chance):
+        chest_result = special_encounter()
+        if chest_result == 0:
+            print("You decided to ignore the chest. You continue on with your journey.")
+            if game_state:
+                current = next_cell
+                prompt(next_cell, debug)
+    
+        elif chest_result == 1:
+            print("Suddenly, a bright flash of light obscures your vision. When you open your eyes, you find yourself transported back to the very place where your adventure began.\n\nYou have been teleported back to the starting point.")
+            if game_state:
+                next_cell = {
+                    "x": game_settings["sx"],
+                    "y": game_settings["sy"]
+                }
+                prompt(next_cell, debug)
+        
+        elif chest_result == 2:
+            print("Inside the chest, you find an unknown potion. As you drink the potion, you feel a sudden jolt of pain.\n\nYou have lost one heart.")
+            remaining_lives -= 1
+            if remaining_lives == 0:
+                print("Game Over!")
+                while True:
+                    try:
+                        restart = input("Do you want to play again? (y/n)\n")
+                        if restart in ["y", "n"]:
+                            break
+                        else:
+                            raise Exception()
+                    except:
+                        print("Invalid input. Please enter only y or n.")
+                if restart.lower() == "y":
+                    remaining_lives = lives
+                    current = {
+                        "x": game_settings["sx"],
+                        "y": game_settings["sy"]
+                    }
+                    prompt(current, debug)
+                game_state = False
+                return
+        elif chest_result == 3:
+            if remaining_lives == lives:
+                print("Inside the chest, you find an unknown potion. You drank the potion, but nothing seemed to happen. You decide to continue on your journey.")
+                if game_state:
+                    current = next_cell
+                    prompt(next_cell, debug)
+            else:
+                print("Inside the chest, you find an unknown potion. As you drink the potion, you feel a surge of power coursing through your body.\n\nYou have gained one heart.")
+                remaining_lives += 1
+                if game_state:
+                    current = next_cell
+                    prompt(next_cell, debug)
+        elif chest_result == 4:
+            print("The chest was a trap! As soon as you opened it, a huge explosion engulfed you.\n\nYou have lost three hearts.")
+            remaining_lives -= 3
+            if remaining_lives <= 0:
+                print("Game Over!")
+                while True:
+                    try:
+                        restart = input("Do you want to play again? (y/n)\n")
+                        if restart in ["y", "n"]:
+                            break
+                        else:
+                            raise Exception()
+                    except:
+                        print("Invalid input. Please enter only y or n.")
+                if restart.lower() == "y":
+                    remaining_lives = lives
+                    current = {
+                        "x": game_settings["sx"],
+                        "y": game_settings["sy"]
+                    }
+                    prompt(current, debug)
+                game_state = False
+                return
+        else:
+            print(f"\nYou have {remaining_lives} hearts remaining.\n")
+            prompt(next_cell, debug)
+
     else:
         if game_state:
             current = next_cell
