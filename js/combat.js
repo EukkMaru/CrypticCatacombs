@@ -1,31 +1,31 @@
 import readline from 'readline';
 
+function wrap(string, head, tail) {
+    return `${head} ${string} ${tail}`;
+}
+
+function randomizeMap(size, difficulty) {
+    let key = "-".repeat(size);
+    const maxIndex = size - difficulty + 1;
+    const startIndex = Math.floor(Math.random() * maxIndex);
+    key = key.substring(0, startIndex) + "+".repeat(difficulty) + key.substring(startIndex + difficulty);
+    return key;
+}
+
+function animate(source) {
+    let result = [];
+    for (let i = 0; i < source.length; i++) {
+        let chars = source.split('');
+        chars[i] = '|';
+        result.push(chars.join(''));
+    }
+    return result;
+}
+
 function generateHitbox(length, layer, hitChance = 3) {
-    length *= 1;
-    layer *= 1;
-    hitChance *= 1;
-
-    function wrap(string, head, tail) {
-        return `${head} ${string} ${tail}`;
-    }
-
-    function randomizeMap(size = length, difficulty = hitChance) {
-        let key = "-".repeat(size);
-        const maxIndex = size - difficulty + 1;
-        const startIndex = Math.floor(Math.random() * maxIndex);
-        key = key.substring(0, startIndex) + "+".repeat(difficulty) + key.substring(startIndex + difficulty);
-        return key;
-    }
-
-    function animate(source) {
-        let result = [];
-        for (let i = 0; i < source.length; i++) {
-            let chars = source.split('');
-            chars[i] = '|';
-            result.push(chars.join(''));
-        }
-        return result;
-    }
+    length = Number(length);
+    layer = Number(layer);
+    hitChance = Number(hitChance);
 
     let recursion = {};
     for (let i = 0; i < layer; i++) {
@@ -93,23 +93,18 @@ async function animateHitbox(recursion, delay = 50) {
 
     rl.close();
 
-    // Collect the last frame of each layer
     const finalFrames = Object.keys(recursion).map(layer => {
         return recursion[layer].Marker[freezeIndex[layer]];
     });
 
-    // Concatenate the frames into a single string
     const finalState = finalFrames.join('\n');
 
     return finalState;
 }
 
-
-
-// Example usage:
-(async () => {
-    const recursion = generateHitbox(10, 3, 3);
-    const finalState = await animateHitbox(recursion);
+export async function executeAndCompare(len = 10, layer = 3, hitChance = 3, interval = 50) {
+    const recursion = generateHitbox(len, layer, hitChance);
+    const finalState = await animateHitbox(recursion, interval);
 
     const originalMaps = Object.keys(recursion).map(layer => {
         return recursion[layer].Map;
@@ -123,7 +118,8 @@ async function animateHitbox(recursion, delay = 50) {
     const finalPlusCount = countPlus(finalState);
     const difference = originalPlusCount - finalPlusCount;
 
-    // console.log('Original Maps:\n', originalMaps);
-    // console.log('Final Frozen State:\n', finalState);
-    console.log(`You have dealt ${difference} damage!`);
-})();
+    return difference;
+}
+
+let dmg = await executeAndCompare();
+console.log(`You have dealt ${dmg} damage!`);
