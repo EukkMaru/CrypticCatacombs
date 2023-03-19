@@ -1,5 +1,7 @@
 # 뭐시기 카타콤 그거
 
+## The JS branch is no longer being continued, new changes are directly made in python from now on.
+
 ## Requirements
 To run this game, you need to have Node.js LTS version installed. If you don't have it installed, you can download it from the following link:
 [https://nodejs.org/en/download/](https://nodejs.org/en/download/)
