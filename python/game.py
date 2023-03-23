@@ -253,6 +253,7 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
     def guessing(numgame = numgame):
         range = numgame["numRange"]
         guesses = numgame["guess"]
+        clear_console()
         print(f"You have encountered a goblin!\nGuess a number between 0 and {range - 1}. You have {guesses} guesses.\n")
         answer = randint(0, range)
         while True:
@@ -403,16 +404,30 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
                 return uppercase_target
             else:
                 return target
-        while remaining_time > 0 and score <= len(target):
+        is_pressed_dict = {}
+        key_timer = {key: time.monotonic() for key in keys}
+        while remaining_time > 0 and score < len(target):
             clear_console()
             frame = generate_frame(target, score)
             print(frame)
             print(f"Time remaining: {remaining_time / 1000:.2f} seconds")
-            current_target = target[score]
-            if keyboard.is_pressed(current_target):
-                score += 1
+            if score < len(target):
+                current_target = target[score]
+                if keyboard.is_pressed(current_target) and not is_pressed_dict.get(current_target, False):
+                    is_pressed_dict[current_target] = True
+                    score += 1
+                    key_timer[current_target] = time.monotonic()
+                if not keyboard.is_pressed(current_target):
+                    is_pressed_dict[current_target] = False
+                if not keyboard.is_pressed(current_target) and any([keyboard.is_pressed(c) for c in keys]):
+                    failed_key = [c for c in keys if keyboard.is_pressed(c)][0]
+                    if time.monotonic() - key_timer[failed_key] > 0.5: #holding threshold
+                        print("You pressed the wrong key!")
+                        return False
             remaining_time -= 25
             time.sleep(0.025)
+        clear_console()
+        print(target.upper()) #visualization issue
         return score == len(target)
 
     selected_game = choice(["guessing", "freezing", "memorizing", "typing"])
