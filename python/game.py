@@ -101,7 +101,7 @@ DIFFICULTY_SETTINGS = {
         "specialEncounterChance": 30,
         "tpChance": 10,
         "potionChance": 87,
-        "potionLuck": 30,
+        "potionLuck": 40,
         "numgame": {
             "numRange": 16,
             "guess": 3
