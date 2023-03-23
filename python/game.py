@@ -1,11 +1,12 @@
 from maze import Maze
 from math import floor, isnan
-from random import random, choice, randint
+from random import random, choice, choices, randint
 import os
 import time
 import sys
 import msvcrt
 import keyboard
+
 
 debug = False
 
@@ -145,7 +146,6 @@ DIFFICULTY_SETTINGS = {
     }
 }
 
-
 def select_difficulty():
     print('Select the difficulty:\n\n1) Easy\n2) Normal\n3) Hard\n4) Expert\n')
 
@@ -177,6 +177,36 @@ def init_difficulty():
 settings, game_settings = init_difficulty()
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
 maze.make_maze()
+
+def special_encounter(tp = settings["tpChance"], potion = settings["potionChance"], luck = settings["potionLuck"]):
+    print("You have found a mysterious chest. Do you want to open it?\n1) Open\n2) Ignore")
+
+    chest_rng = random() * 100
+    potion_rng = random() * 100
+
+    while True:
+        try:
+            answer = int(input("> "))
+            if answer > 2 or answer < 1:
+                raise Exception()
+            else:
+                break
+        except:
+            print(f"Invalid input. Please enter an integer between 1 and 2")
+
+    if answer == 2:
+        return 0
+    else:
+        if chest_rng < tp:
+            return 1
+        elif chest_rng > tp and chest_rng < (tp+potion):
+            if potion_rng < settings["potionLuck"]:
+                return 2
+            else:
+                return 3
+        else:
+            return 4
+
 
 if debug:
     print(maze.print_maze())
@@ -220,35 +250,41 @@ def generate_options(north = False, south = False, west = False, east = False):
     }
 
 def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"], memorygame = settings["memorygame"], typinggame = settings["typinggame"]):
-    def guessing(numgame):
-        print(f"You have encountered a monster!\nGuess a number between 0 and {num_range - 1}. You have {num_guesses} guesses.\n")
-        num_range = numgame["num_range"]
-        answer = random.randint(0, num_range)
+    def guessing(numgame = numgame):
+        range = numgame["numRange"]
+        guesses = numgame["guess"]
+        print(f"You have encountered a goblin!\nGuess a number between 0 and {range - 1}. You have {guesses} guesses.\n")
+        answer = randint(0, range)
         while True:
-            guess = int(input("> "))
+            while True:
+                try:
+                    guess = int(input("> "))
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter an integer.")
+                    continue
 
-            if isnan(guess):
-                print(f"Invalid input. Please enter a number between 0 and {num_range - 1}.\n")
+            if isnan(guess) or not guess:
+                print(f"Invalid input. Please enter a number between 0 and {range - 1}.\n")
                 continue
-            elif guess < 0 or guess > (num_range - 1):
-                print(f"Invalid guess. Please enter a number between 0 and {num_range - 1}.\n")
+            elif guess < 0 or guess > (range - 1):
+                print(f"Invalid guess. Please enter a number between 0 and {range - 1}.\n")
                 continue
             elif guess == answer:
-                print("Congratulations! You have defeated a monster!\n")
                 return True
             else:
-                num_guesses -= 1
-                if num_guesses == 0:
-                    print(f"Sorry, you are out of guesses. The answer was {answer}.\nYou lost one heart.\n")
+                guesses -= 1
+                if guesses == 0:
+                    print(f"Sorry, you are out of guesses. The answer was {answer}.\n")
                     return False
                 elif guess > answer:
-                    print(f"Wrong answer. Your guess is too high. You have {num_guesses} guesses left.")
+                    print(f"Wrong answer. Your guess is too high. You have {guesses} guesses left.")
                     continue
                 elif guess < answer:
-                    print(f"Wrong answer. Your guess is too low. You have {num_guesses} guesses left.")
+                    print(f"Wrong answer. Your guess is too low. You have {guesses} guesses left.")
                     continue
 
-    def freezing(freezegame):
+    def freezing(freezegame = freezegame):
         
         def wrap(string, head, tail):
             return f"{head}{string}{tail}"
@@ -256,7 +292,7 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
         def randomize_map(size, difficulty):
             key = "-" * size
             max_index = size - difficulty + 1
-            start_index = random.randint(0, max_index - 1)
+            start_index = randint(0, max_index - 1)
             key = key[:start_index] + "+" * difficulty + key[start_index + difficulty:]
             return key
 
@@ -283,6 +319,11 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
         def sleep(ms):
             time.sleep(ms / 1000)
             return;
+    
+        clear_console()
+        print("You have encountered a golem!\nStop the bar at \"+\" using your spacebar!")
+        time.sleep(4)
+
         recursion = generate_hitbox(freezegame["length"])
         freeze = [False] * len(recursion)
         freeze_index = [0] * len(recursion)
@@ -302,7 +343,8 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
         index = 0
 
         def print_frames():
-            sys.stdout.write("\033[2J\033[H")  # Clear the console
+            #sys.stdout.write("\033[2J\033[H")  # Clear the console
+            clear_console()
             print("\n" * 6)
             for layer in recursion:
                 if not freeze[layer]:
@@ -330,13 +372,50 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
 
         return difference == 0
 
-    def memorizing(memorygame):
-        return;
+    def memorizing(memorygame = memorygame):
+        length = memorygame["length"]
+        interval = memorygame["interval"]
+        numbers = [str(randint(0, 9)) for _ in range(length)]
+        clear_console()
+        print("You have encountered a slime!\nMemorize the numbers to fight it!")
+        time.sleep(4)
+        for number in numbers:
+            clear_console()
+            print(number)
+            time.sleep(interval / 1000)
+            clear_console()
+            time.sleep(interval / 1000)
+        user_input = input("Enter the string in reverse order: ")
+        return user_input == "".join(reversed(numbers))
 
-    def typing(typinggame):
-        return;
+    def typing(typinggame = typinggame):
+        keys = "qweasd"
+        clear_console()
+        print("You have encountered a skeleton!\nType the string of text in time to fight it!")
+        time.sleep(4)
+        indexes = [randint(0, len(keys) - 1) for _ in range(typinggame["length"])]
+        target = "".join([keys[i] for i in indexes])
+        remaining_time = typinggame["time"]
+        score = 0
+        def generate_frame(target, score):
+            uppercase_target = target[:score].upper() + target[score:]
+            if score != 0:
+                return uppercase_target
+            else:
+                return target
+        while remaining_time > 0 and score <= len(target):
+            clear_console()
+            frame = generate_frame(target, score)
+            print(frame)
+            print(f"Time remaining: {remaining_time / 1000:.2f} seconds")
+            current_target = target[score]
+            if keyboard.is_pressed(current_target):
+                score += 1
+            remaining_time -= 25
+            time.sleep(0.025)
+        return score == len(target)
 
-    selected_game = random.choice(["guessing", "freezing", "memorizing", "typing"])
+    selected_game = choice(["guessing", "freezing", "memorizing", "typing"])
     
     if selected_game == "guessing":
         return guessing()
@@ -428,6 +507,8 @@ def prompt(current, debug = False):
                 raise Exception()
             else:
                 break
+        except KeyboardInterrupt:
+            exit()
         except:
             print(f"Invalid input. Please enter an integer between 1 and {len(options['directions'])}")
         
@@ -469,10 +550,12 @@ def prompt(current, debug = False):
    `--'          `-----'   `-----'          '--'   '--'       `-----' `--'  `--'  '--' '--'  """
         return print(winning_str)
     
-    if (random() * 100 < settings["encounter_chance"]):
+    rng = random() * 100
+    if (rng < settings["encounter_chance"]):
         combat = encounter()
         if not combat:
             remaining_lives -= 1
+            print("You lost the combat, you lost one heart.")
             if remaining_lives == 0:
                 print("Game Over!")
                 
@@ -498,13 +581,93 @@ def prompt(current, debug = False):
                 return
             else:
                 print(f"\nYou have {remaining_lives} hearts remaining.\n")
-                prompt(current, debug)
-
+                prompt(next_cell, debug)
         else:
+            print('Congratulations! You have won the combat! You continue on with your journey.')
             # time.sleep(1000)
             if game_state:
                 current = next_cell
                 prompt(next_cell, debug)
+    elif rng > settings["encounter_chance"] and rng < (settings["encounter_chance"] + settings["specialEncounterChance"]):
+        chest_result = special_encounter()
+        if chest_result == 0:
+            print("You decided to ignore the chest. You continue on with your journey.")
+            if game_state:
+                current = next_cell
+                prompt(next_cell, debug)
+
+        elif chest_result == 1:
+            print("Suddenly, a bright flash of light obscures your vision. When you open your eyes, you find yourself transported back to the very place where your adventure began.\n\nYou have been teleported back to the starting point.")
+            if game_state:
+                next_cell = {
+                    "x": game_settings["sx"],
+                    "y": game_settings["sy"]
+                }
+                prompt(next_cell, debug)
+
+        elif chest_result == 2:
+            print("Inside the chest, you find an unknown potion. As you drink the potion, you feel a sudden jolt of pain.\n\nYou have lost one heart.")
+            remaining_lives -= 1
+            if remaining_lives == 0:
+                print("Game Over!")
+                while True:
+                    try:
+                        restart = input("Do you want to play again? (y/n)\n")
+                        if restart in ["y", "n"]:
+                            break
+                        else:
+                            raise Exception()
+                    except:
+                        print("Invalid input. Please enter only y or n.")
+                if restart.lower() == "y":
+                    remaining_lives = lives
+                    current = {
+                        "x": game_settings["sx"],
+                        "y": game_settings["sy"]
+                    }
+                    prompt(current, debug)
+                game_state = False
+                return
+            else:
+                prompt(next_cell, debug)
+        elif chest_result == 3:
+            if remaining_lives == lives:
+                print("Inside the chest, you find an unknown potion. You drank the potion, but nothing seemed to happen. You decide to continue on your journey.")
+                if game_state:
+                    current = next_cell
+                    prompt(next_cell, debug)
+            else:
+                print("Inside the chest, you find an unknown potion. As you drink the potion, you feel a surge of power coursing through your body.\n\nYou have gained one heart.")
+                remaining_lives += 1
+                if game_state:
+                    current = next_cell
+                    prompt(next_cell, debug)
+        elif chest_result == 4:
+            print("The chest was a trap! As soon as you opened it, a huge explosion engulfed you.\n\nYou have lost three hearts.")
+            remaining_lives -= 3
+            if remaining_lives <= 0:
+                print("Game Over!")
+                while True:
+                    try:
+                        restart = input("Do you want to play again? (y/n)\n")
+                        if restart in ["y", "n"]:
+                            break
+                        else:
+                            raise Exception()
+                    except:
+                        print("Invalid input. Please enter only y or n.")
+                if restart.lower() == "y":
+                    remaining_lives = lives
+                    current = {
+                        "x": game_settings["sx"],
+                        "y": game_settings["sy"]
+                    }
+                    prompt(current, debug)
+                game_state = False
+                return
+        else:
+            print(f"\nYou have {remaining_lives} hearts remaining.\n")
+            prompt(next_cell, debug)
     else:
         if game_state:
             current = next_cell
