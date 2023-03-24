@@ -21,4 +21,8 @@ To run this game, you need to have Node.js LTS version installed. If you don't h
 To exit the game, press `ctrl+c` in the terminal. This will terminate the program and return you to the command prompt.
 
 ## Troubleshooting
-Don't
+
+```js
+if (goingToThrowErrorAndCrash()) {
+    dont();
+}```
