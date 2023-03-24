@@ -1,7 +1,7 @@
 from maze import Maze
 from math import floor, isnan
 from random import random, choice, choices, randint
-# from temp import fn1 as function1, fn2 as function2
+from story import print_story, show_title, rule_description
 import os
 import time
 import sys
@@ -174,6 +174,14 @@ def init_difficulty():
         game_settings = init(DIFFICULTY_SETTINGS["expert"]["dimensions"])
     
     return DIFFICULTY_SETTINGS[list(DIFFICULTY_SETTINGS.keys())[difficulty - 1]], game_settings
+
+show_title()
+time.sleep(3)
+print_story()
+time.sleep(5)
+input("Press the Enter key to continue...")
+rule_description()
+input("Press the Enter key to continue...")
 
 settings, game_settings = init_difficulty()
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
