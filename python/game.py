@@ -1,11 +1,9 @@
 from maze import Maze
 from math import floor, isnan
-from random import random, choice, choices, randint
+from random import random, choice, randint
 from story import print_story, show_title, rule_description
 import os
 import time
-import sys
-import msvcrt
 import keyboard
 
 
