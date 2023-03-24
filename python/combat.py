@@ -1,3 +1,5 @@
+"""
+
 from random import random
 from math import floor
 from time import sleep
@@ -37,4 +39,4 @@ def generate_hitbox(length, layer, hit_chance = 3):
 def animate_hitbox(recursion, delay = 50):
     freeze = []
     freeze_index = []
-    
+    """
