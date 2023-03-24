@@ -1,4 +1,4 @@
-# 뭐시기 카타콤 그거
+# Cryptic Catacombs
 
 ## The JS branch is no longer being continued, new changes are directly made in python from now on.
 
@@ -8,14 +8,17 @@ To run this game, you need to have Node.js LTS version installed. If you don't h
 
 ## How to start
 1. Open the terminal or command prompt.
-2. Navigate to the directory where the game.js file is located.
+2. Navigate to the ./python/ directory, where game.py is located.
 3. Run the following command in the terminal: 
 
     ```
-    node game.js
+    python3 game.py
     ```
 
 4. The game will start running in the terminal.
 
 ## How to exit
 To exit the game, press `ctrl+c` in the terminal. This will terminate the program and return you to the command prompt.
+
+## Troubleshooting
+Don't
