@@ -1,11 +1,8 @@
 import os
 import time 
-from pyfiglet import Figlet
 from time import sleep
 import sys
 import math
-
-
 
 def typing_Ani(text, speed):
         string = text;
@@ -25,11 +22,9 @@ def Item_Typing_Ani(list, speed):
 def print_story():
     Item_Typing_Ani(["You went to Jeju Island for a 'Kentech preview' on January 31st"], 0.03)
     sleep(1)
-    os.system('cls')
-    Item_Typing_Ani(['While taking a walk near Seob-ji-ko-ji, You found a cave on the beach and went in'], 0.03)
+    Item_Typing_Ani(['While taking a walk near Seob-ji-ko-ji, You found a cave on the beach and went in.'], 0.03)
     sleep(1)
-    os.system('cls')
-    Item_Typing_Ani(['There was a large mural, and it went deeper, as if attracted by something..'], 0.03)
+    Item_Typing_Ani(['There was a large mural, and you went deeper, as if you were being attracted by something..'], 0.03)
 
     
 

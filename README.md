@@ -3,8 +3,10 @@
 ## The JS branch is no longer being continued, new changes are directly made in python from now on.
 
 ## Requirements
-To run this game, you need to have Node.js LTS version installed. If you don't have it installed, you can download it from the following link:
-[https://nodejs.org/en/download/](https://nodejs.org/en/download/)
+You need to installed the required packages from pip using the follwing command:
+```
+pip install -r requirements.txt
+```
 
 ## How to start
 1. Open the terminal or command prompt.
