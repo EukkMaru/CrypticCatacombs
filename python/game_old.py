@@ -4,10 +4,8 @@ from random import random, choice, randint
 from story import print_story, show_title, rule_description
 import os
 import time
-from pynput.keyboard import Key, Listener
+import keyboard
 
-# with Listener() as listener:
-#     listener.join()
 
 debug = False
 
@@ -175,13 +173,13 @@ def init_difficulty():
     
     return DIFFICULTY_SETTINGS[list(DIFFICULTY_SETTINGS.keys())[difficulty - 1]], game_settings
 
-# show_title()
-# time.sleep(3)
-# print_story()
-# time.sleep(5)
-# input("Press the Enter key to continue...")
-# rule_description()
-# input("Press the Enter key to continue...")
+show_title()
+time.sleep(3)
+print_story()
+time.sleep(5)
+input("Press the Enter key to continue...")
+rule_description()
+input("Press the Enter key to continue...")
 
 settings, game_settings = init_difficulty()
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
@@ -340,18 +338,15 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
         freeze_count = 0
 
         def on_key_press(key):
-            if key == Key.space:
-                nonlocal freeze_count
-                if freeze_count < len(freeze):
-                    freeze[freeze_count] = True
-                    freeze_index[freeze_count] = (index - 1 + len(recursion[freeze_count]["Marker"])) % len(recursion[freeze_count]["Marker"])
-                    freeze_count += 1
-                else:
-                    freeze_count += 1
+            nonlocal freeze_count
+            if freeze_count < len(freeze):
+                freeze[freeze_count] = True
+                freeze_index[freeze_count] = (index - 1 + len(recursion[freeze_count]["Marker"])) % len(recursion[freeze_count]["Marker"])
+                freeze_count += 1
+            else:
+                freeze_count += 1
 
-        # keyboard.on_press_key("space", on_key_press)
-        with Listener(on_press=on_key_press, on_release=None) as freezing_listener:
-            freezing_listener.join()
+        keyboard.on_press_key("space", on_key_press)
 
         index = 0
 
@@ -372,7 +367,7 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
 
         print_frames()
 
-        # keyboard.unhook_key("space")
+        keyboard.unhook_key("space")
 
         final_frames = [recursion[layer]["Marker"][freeze_index[layer]] for layer in recursion]
         final_state = "\n".join(final_frames)
@@ -425,36 +420,24 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
             print(f"Time remaining: {remaining_time / 1000:.2f} seconds")
             if score < len(target):
                 current_target = target[score]
-
-                def on_press(key):
-                    if key == current_target:
-                        score += 1
-                    else:
+                if keyboard.is_pressed(current_target) and not is_pressed_dict.get(current_target, False):
+                    is_pressed_dict[current_target] = True
+                    score += 1
+                    key_timer[current_target] = time.monotonic()
+                if not keyboard.is_pressed(current_target):
+                    is_pressed_dict[current_target] = False
+                if not keyboard.is_pressed(current_target) and any([keyboard.is_pressed(c) for c in keys]):
+                    failed_key = [c for c in keys if keyboard.is_pressed(c)][0]
+                    if time.monotonic() - key_timer[failed_key] > 0.5: #holding threshold
                         print("You pressed the wrong key!")
                         return False
-
-                with Listener() as typing_listener:
-                    typing_listener.join()
-
-                # if keyboard.is_pressed(current_target) and not is_pressed_dict.get(current_target, False):
-                #     is_pressed_dict[current_target] = True
-                #     score += 1
-                #     key_timer[current_target] = time.monotonic()
-                # if not keyboard.is_pressed(current_target):
-                #     is_pressed_dict[current_target] = False
-                # if not keyboard.is_pressed(current_target) and any([keyboard.is_pressed(c) for c in keys]):
-                #     failed_key = [c for c in keys if keyboard.is_pressed(c)][0]
-                #     if time.monotonic() - key_timer[failed_key] > 0.5: #holding threshold
-                #         print("You pressed the wrong key!")
-                #         return False
             remaining_time -= 25
             time.sleep(0.025)
         clear_console()
         print(target.upper()) #visualization issue
         return score == len(target)
 
-    # selected_game = choice(["guessing", "freezing", "memorizing", "typing"])
-    selected_game = choice(["typing", "typing", "typing", "typing"])
+    selected_game = choice(["guessing", "freezing", "memorizing", "typing"])
     
     if selected_game == "guessing":
         return guessing()
