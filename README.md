@@ -25,4 +25,5 @@ To exit the game, press `ctrl+c` in the terminal. This will terminate the progra
 ```js
 if (goingToThrowErrorAndCrash()) {
     dont();
-}```
+}
+```
