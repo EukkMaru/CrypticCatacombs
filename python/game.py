@@ -1,6 +1,7 @@
 from maze import Maze
 from math import floor, isnan
 from random import random, choice, choices, randint
+# from temp import fn1 as function1, fn2 as function2
 import os
 import time
 import sys
