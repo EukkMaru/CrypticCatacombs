@@ -4,6 +4,12 @@ from time import sleep
 import sys
 import math
 
+def clear_console():
+    if os.name == 'posix':  # For Linux and macOS
+        os.system('clear')
+    elif os.name == 'nt':  # For Windows
+        os.system('cls')
+
 def typing_Ani(text, speed):
         string = text;
         for letter in string:
@@ -391,7 +397,7 @@ def show_title():
     catacombs = []
     catacombs = catacomb.split(sep='0')
     for i in range(22):
-        os.system('cls')
+        clear_console()
         print(cryptics[i])
         print(catacombs[math.floor(i*32/22)])
         sleep(0.13)
@@ -399,5 +405,5 @@ def show_title():
 
 def rule_description():
     sleep(1)
-    os.system('cls')
+    clear_console()
     Item_Typing_Ani(["Rule description: You are trapped in a maze The maze is square and varies in size with difficulty\nYou can advance in up to four directions in each room.\nWhen you move to each room, you may face a new event.\n Complete the mission in each event and save your life to escape the maze"],0.03)
