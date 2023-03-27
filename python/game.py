@@ -7,7 +7,7 @@ import time
 import keyboard
 
 
-debug = False
+debug = True
 
 def clear_console():
     if os.name == 'posix':  # For Linux and macOS
@@ -433,7 +433,7 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
                         print("You pressed the wrong key!")
                         return False
             remaining_time -= 25
-            time.sleep(0.025)
+            time.sleep(0.0125) #somehow this is twice as slow
         clear_console()
         print(target.upper()) #visualization issue
         return score == len(target)
