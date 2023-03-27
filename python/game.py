@@ -173,13 +173,14 @@ def init_difficulty():
     
     return DIFFICULTY_SETTINGS[list(DIFFICULTY_SETTINGS.keys())[difficulty - 1]], game_settings
 
-show_title()
-time.sleep(3)
-print_story()
-time.sleep(5)
-input("Press the Enter key to continue...")
-rule_description()
-input("Press the Enter key to continue...")
+if not debug:
+    show_title()
+    time.sleep(3)
+    print_story()
+    time.sleep(5)
+    input("Press the Enter key to continue...")
+    rule_description()
+    input("Press the Enter key to continue...")
 
 settings, game_settings = init_difficulty()
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
