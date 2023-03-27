@@ -26,11 +26,11 @@ def Item_Typing_Ani(list, speed):
 
 
 def print_story():
-    Item_Typing_Ani(["You went to Jeju Island for a 'Kentech preview' on January 31st"], 0.03)
+    Item_Typing_Ani(["January 31st, 2023. You went to Jeju Island for 'Kentech preview'"], 0.03)
     sleep(1)
-    Item_Typing_Ani(['While taking a walk near Seob-ji-ko-ji, You found a cave on the beach and went in.'], 0.03)
+    Item_Typing_Ani(['While taking a walk near Seob-ji-ko-ji, you found a cave on the beach and decided to explore.'], 0.03)
     sleep(1)
-    Item_Typing_Ani(['There was a large mural, and you went deeper, as if you were being attracted by something..'], 0.03)
+    Item_Typing_Ani(['There was a large cave painting. You went deeper, as if you were being attracted by something...'], 0.03)
 
     
 
@@ -406,4 +406,19 @@ def show_title():
 def rule_description():
     sleep(1)
     clear_console()
-    Item_Typing_Ani(["Rule description: You are trapped in a maze The maze is square and varies in size with difficulty\nYou can advance in up to four directions in each room.\nWhen you move to each room, you may face a new event.\n Complete the mission in each event and save your life to escape the maze"],0.03)
+    Item_Typing_Ani(["""Your goal is to escape from a dungeon called "Cryptic Catacombs".
+You choose difficulty level from easy, medium, hard to extreme.
+Each difficulty level provides different number of lives, and different size of the map.
+
+Each turn, you can move in open directions using number input.
+Whenever you move, you have a chance to encounter a monster, or find a mysterious chest.
+If you encounter a goblin, you have to guess a number to beat it.
+If you encounter a slime, you have to memorize a set of numbers, and repeat them backwards to beat it.
+If you encounter a skeleton, you will have to type a given string before the time runs out to beat it.
+If you encounter a golem, you will have to press space when the bar goes over the "+" to beat it.
+
+If you find a chest, you are prompted to whether open it or not.
+There will be mysterious items inside the chest, either good or bad.
+
+You can win the game by reaching the ending point.
+You lose when you run out of your life."""],0.03)

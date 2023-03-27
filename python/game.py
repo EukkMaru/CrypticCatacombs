@@ -175,9 +175,9 @@ def init_difficulty():
 
 if not debug:
     show_title()
-    time.sleep(3)
+    time.sleep(2)
     print_story()
-    time.sleep(5)
+    time.sleep(2)
     input("Press the Enter key to continue...")
     rule_description()
     input("Press the Enter key to continue...")
