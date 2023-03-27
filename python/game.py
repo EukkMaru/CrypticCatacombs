@@ -7,7 +7,7 @@ import time
 import keyboard
 
 
-debug = True
+debug = False
 
 def clear_console():
     if os.name == 'posix':  # For Linux and macOS
@@ -146,7 +146,7 @@ DIFFICULTY_SETTINGS = {
 }
 
 def select_difficulty():
-    print('Select the difficulty:\n\n1) Easy\n2) Normal\n3) Hard\n4) Expert\n')
+    print('\nSelect the difficulty:\n\n1) Easy\n2) Normal\n3) Hard\n4) Expert\n')
 
     while True:
         try:
@@ -178,9 +178,10 @@ if not debug:
     time.sleep(2)
     print_story()
     time.sleep(2)
-    input("Press the Enter key to continue...")
-    rule_description()
-    input("Press the Enter key to continue...")
+    skip = input("Type 'skip' to skip rule description.\nPress the Enter key to continue...")
+    if not skip:
+        rule_description()
+        input("Press the Enter key to continue...")
 
 settings, game_settings = init_difficulty()
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
