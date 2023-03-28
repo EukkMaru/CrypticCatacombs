@@ -79,6 +79,16 @@ def init_difficulty():
     return DIFFICULTY_SETTINGS[list(DIFFICULTY_SETTINGS.keys())[difficulty - 1]], game_settings
 
 if not debug:
+    if os.name == 'posix':  # For Linux and macOS
+        print("WARNING: This game may not work properly on Linux and macOS. Please use Windows if possible.\nYou might encounter issues with the keyboard input.\n")
+        cont = input("Do you still want to continue? (y/n)\n> ")
+        if cont == "n":
+            exit()
+        elif cont == "y":
+            pass
+        else:
+            print("Invalid input. Exiting...")
+            exit()
     show_title()
     time.sleep(2)
     skip1 = input("Type 'skip' to skip story.\nPress the Enter key to continue...")
