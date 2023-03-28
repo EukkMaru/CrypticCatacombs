@@ -182,7 +182,7 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
         guesses = numgame["guess"]
         clear_console()
         print(f"You have encountered a goblin!\nGuess a number between 0 and {range - 1}. You have {guesses} guesses.\n")
-        answer = randint(0, range)
+        answer = randint(0, range-1)
         while True:
             while True:
                 try:
