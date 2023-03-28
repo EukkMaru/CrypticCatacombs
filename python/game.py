@@ -7,9 +7,12 @@ import time
 import keyboard
 import json
 
-with open('./config.json') as f:
-    DIFFICULTY_SETTINGS = json.load(f)
-
+try:
+    with open('./config.json') as f:
+        DIFFICULTY_SETTINGS = json.load(f)
+except:
+    print("Error: Could not load config.json.\nTry cd'ing to the directory where the game.py file is located and try again.\n")
+    exit()
 
 debug = False
 
