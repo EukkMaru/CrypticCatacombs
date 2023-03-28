@@ -5,6 +5,10 @@ from story import print_story, show_title, rule_description
 import os
 import time
 import keyboard
+import json
+
+with open('./config.json') as f:
+    DIFFICULTY_SETTINGS = json.load(f)
 
 
 debug = False
@@ -42,108 +46,6 @@ def init(dimension=8):
 
     return {"nx": dimension, "ny": dimension, "sx": starting_x, "sy": starting_y, "ex": ending_x, "ey": ending_y}
 
-DIFFICULTY_SETTINGS = {
-    "easy": {
-        "dimensions": 4,
-        "encounter_chance": 15,
-        "lives": 5,
-        "specialEncounterChance": 25,
-        "tpChance": 5,
-        "potionChance": 95,
-        "potionLuck": 25,
-        "numgame": {
-            "numRange": 10,
-            "guess": 5
-        },
-        "freezegame": {
-            "length": 10,
-            "interval": 100
-        },
-        "memorygame": {
-            "length": 4,
-            "interval": 1000
-        },
-        "typinggame": {
-            "length": 4,
-            "time": 4000
-        }
-    },
-    "normal": {
-        "dimensions": 6,
-        "encounter_chance": 25,
-        "lives": 5,
-        "specialEncounterChance": 25,
-        "tpChance": 5,
-        "potionChance": 93,
-        "potionLuck": 30,
-        "numgame": {
-            "numRange": 16,
-            "guess": 4
-        },
-        "freezegame": {
-            "length": 10,
-            "interval": 50
-        },
-        "memorygame": {
-            "length": 6,
-            "interval": 1000
-        },
-        "typinggame": {
-            "length": 6,
-            "time": 5000
-        }
-    },
-    "hard": {
-        "dimensions": 8,
-        "encounter_chance": 30,
-        "lives": 4,
-        "specialEncounterChance": 30,
-        "tpChance": 10,
-        "potionChance": 87,
-        "potionLuck": 40,
-        "numgame": {
-            "numRange": 16,
-            "guess": 3
-        },
-        "freezegame": {
-            "length": 20,
-            "interval": 40
-        },
-        "memorygame": {
-            "length": 6,
-            "interval": 500
-        },
-        "typinggame": {
-            "length": 8,
-            "time": 5000
-        }
-    },
-    "expert": {
-        "dimensions": 12,
-        "encounter_chance": 50,
-        "lives": 3,
-        "specialEncounterChance": 30,
-        "tpChance": 10,
-        "potionChance": 87,
-        "potionLuck": 50,
-        "numgame": {
-            "numRange": 19,
-            "guess": 3
-        },
-        "freezegame": {
-            "length": 20,
-            "interval": 15
-        },
-        "memorygame": {
-            "length": 8,
-            "interval": 500
-        },
-        "typinggame": {
-            "length": 8,
-            "time": 3500
-        }
-    }
-}
 
 def select_difficulty():
     print('\nSelect the difficulty:\n\n1) Easy\n2) Normal\n3) Hard\n4) Expert\n')
@@ -176,12 +78,15 @@ def init_difficulty():
 if not debug:
     show_title()
     time.sleep(2)
-    print_story()
-    time.sleep(2)
-    skip = input("Type 'skip' to skip rule description.\nPress the Enter key to continue...")
-    if not skip:
-        rule_description()
-        input("Press the Enter key to continue...")
+    skip1 = input("Type 'skip' to skip story.\nPress the Enter key to continue...")
+    if not skip1:
+        print("\n")
+        print_story()
+        time.sleep(2)
+        skip2 = input("Type 'skip' to skip rule description.\nPress the Enter key to continue...")
+        if not skip2:
+            rule_description()
+            input("Press the Enter key to continue...")
 
 settings, game_settings = init_difficulty()
 maze = Maze(game_settings["nx"], game_settings["ny"], game_settings["sx"], game_settings["sy"])
@@ -699,5 +604,5 @@ def prompt(current, debug = False):
 
 # if debug:
 #     print(maze.cell_at(current_cell["x"], current_cell["y"]))
-
-prompt(current_cell, debug)
+if __name__ == '__main__':
+    prompt(current_cell, debug)
