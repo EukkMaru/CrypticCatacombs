@@ -285,7 +285,7 @@ def encounter(numgame = settings["numgame"], freezegame = settings["freezegame"]
         final_plus_count = final_state.count("+")
         difference = original_plus_count - final_plus_count
 
-        return difference == 0
+        return difference == 2
 
     def memorizing(memorygame = memorygame):
         length = memorygame["length"]
