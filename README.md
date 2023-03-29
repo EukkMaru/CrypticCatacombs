@@ -3,7 +3,7 @@
 ## The JS branch is no longer being continued, new changes are directly made in python from now on.
 
 ## Requirements
-You need to installed the required packages from pip using the follwing command:
+You need to install the required packages from pip using the follwing command:
 ```
 pip install -r requirements.txt
 ```
